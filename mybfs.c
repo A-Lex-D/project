@@ -9,6 +9,9 @@
 *
 *	
 *	Modifications done to source code to get them to work together
+*
+*
+*	Compile with:  gcc -o mybfs mybfs.c -lrt
 */
 
 #include <stdio.h>
@@ -16,8 +19,10 @@
 #include <time.h>
 #include <string.h>
 
-#define VERTICES 100000
-#define MAX_EDGES 5000
+#define VERTICES 80000
+#define MAX_EDGES 50000
+#define GIG 1000000000
+#define CPG 2.533 
 
 typedef struct Queue
 {
@@ -31,6 +36,8 @@ typedef struct Queue
 int main()
 {
 	void Bfs(int** graph, int *size, int presentVertex,int *visited);
+	struct timespec diff(struct timespec start, struct timespec end);
+  	struct timespec time1, time2, fintime;
 	
 	srand(time(NULL));
 	int *visited;
@@ -44,7 +51,7 @@ int main()
 	//Graph is 2 dimensional array of pointers
 	int **graph;
 
-	printf("Total vertices = %d, Max edges = %d\n", VERTICES, MAX_EDGES);
+	//printf("Total vertices = %d, Max edges = %d\n", VERTICES, MAX_EDGES);
 
 	//Generate dynamic array
 	if ((graph=(int**)malloc(sizeof(int *) * VERTICES))==NULL)
@@ -83,6 +90,8 @@ int main()
 
 	}
 
+	
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	int presentVertex;
     for(presentVertex=0;presentVertex<VERTICES;presentVertex++)
@@ -94,6 +103,14 @@ int main()
         }
     }
 
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
+
+
+	fintime = diff(time1,time2);
+
+    printf("%f, \n", (double)(CPG)*(double)(GIG*fintime.tv_sec
+				+fintime.tv_nsec));
 	return 0;
 }
 
@@ -179,7 +196,7 @@ void Bfs(int** graph, int *size, int presentVertex,int *visited)
         while(Q->size)
         {
                 presentVertex = Front(Q);
-                printf("Now visiting vertex %d\n",presentVertex);
+                //printf("Now visiting vertex %d\n",presentVertex);
                 Dequeue(Q);
                 int iter;
                 for(iter=0;iter<size[presentVertex];iter++)
@@ -197,4 +214,17 @@ void Bfs(int** graph, int *size, int presentVertex,int *visited)
         return;
         
 
+}
+
+struct timespec diff(struct timespec start, struct timespec end)
+{
+  struct timespec temp;
+  if ((end.tv_nsec-start.tv_nsec)<0) {
+    temp.tv_sec = end.tv_sec-start.tv_sec-1;
+    temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+  } else {
+    temp.tv_sec = end.tv_sec-start.tv_sec;
+    temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+  }
+  return temp;
 }
