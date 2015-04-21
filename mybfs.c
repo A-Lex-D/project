@@ -14,9 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <assert.h>
+#include <string.h>
 
-#define MAX_VERTICES 10000
+#define VERTICES 100000
 #define MAX_EDGES 5000
 
 typedef struct Queue
@@ -33,19 +33,21 @@ int main()
 	void Bfs(int** graph, int *size, int presentVertex,int *visited);
 	
 	srand(time(NULL));
-	int size[MAX_VERTICES]={0}, visited[MAX_VERTICES]={0};
+	int *visited;
+	if ((visited=(int*)calloc(VERTICES, sizeof(int)))==NULL)
+	{
+		printf("Could not allocate memory for visited array\n");
+		exit(1);
+	}
+	int size[VERTICES]={0};
 	
-	//Number of nodes in graph
-	int numberOfVertices = MAX_VERTICES;
-	//Max number of vertices each node can have
-	int maxNumberOfEdges = MAX_EDGES;
 	//Graph is 2 dimensional array of pointers
 	int **graph;
 
-	printf("Total vertices = %d, Max edges = %d\n", numberOfVertices, maxNumberOfEdges);
+	printf("Total vertices = %d, Max edges = %d\n", VERTICES, MAX_EDGES);
 
 	//Generate dynamic array
-	if ((graph=(int**)malloc(sizeof(int *) * numberOfVertices))==NULL)
+	if ((graph=(int**)malloc(sizeof(int *) * VERTICES))==NULL)
 	{
 		printf("Could not allocate memory for graph\n");
 		exit(1);
@@ -57,44 +59,24 @@ int main()
 	//Generate space for vertices
 	int edgeCounter = 0;
 
-	for(vertexCounter=0; vertexCounter<numberOfVertices; vertexCounter++)
+	//Link the graph
+	for(vertexCounter=0; vertexCounter<VERTICES; vertexCounter++)
 	{
-		if((graph[vertexCounter]=(int*)malloc(sizeof(int)*maxNumberOfEdges))==NULL)
+		size[vertexCounter] = rand()%MAX_EDGES;
+		
+		if((graph[vertexCounter]=(int*)malloc(sizeof(int)*size[vertexCounter]))==NULL)
 		{
 			printf("Could not allocate memory for edges\n");
 			exit(1);
 		}
-
-		for(edgeCounter=0; edgeCounter<maxNumberOfEdges; edgeCounter++)
-		{
-			if((graph[vertexCounter][edgeCounter]=(int*)malloc(sizeof(int)))==NULL)
-			{
-				printf("Could not allocate memory for vertex\n");
-				exit(1);
-			}
-		}
-	}
-
-	//Link the graph
-	for(vertexCounter=0; vertexCounter<numberOfVertices; vertexCounter++)
-	{
+		
 		//printf("%d:\t", vertexCounter);
 		
-		for(edgeCounter=0; edgeCounter<maxNumberOfEdges; edgeCounter++)
+		for(edgeCounter=0; edgeCounter<size[vertexCounter]; edgeCounter++)
 		{
-			if(rand()%2 == 1)//link vertices
-			{
-				int linkedVertex = rand()%numberOfVertices;
+				int linkedVertex = rand()%VERTICES;
 				graph[vertexCounter][edgeCounter]=linkedVertex;
 				//printf("%d, ", linkedVertex);
-			}
-			
-			else //make link null
-			{
-				graph[vertexCounter][edgeCounter]=NULL;
-
-			}
-				size[edgeCounter] = size[edgeCounter]+1;
 		}
 
 		//printf("\n");
@@ -103,11 +85,12 @@ int main()
 
 
 	int presentVertex;
-    for(presentVertex=0;presentVertex<numberOfVertices;presentVertex++)
+    for(presentVertex=0;presentVertex<VERTICES;presentVertex++)
     {
     	if(!visited[presentVertex])
-    	{
-    		Bfs(graph,size,presentVertex,visited);
+    	{   		
+			Bfs(graph,size,presentVertex,visited);
+			//memset(visited, 0, (VERTICES*sizeof(int))); 
         }
     }
 
@@ -191,7 +174,7 @@ void Bfs(int** graph, int *size, int presentVertex,int *visited)
         visited[presentVertex] = 1;
         /* Iterate through all the vertices connected to the presentVertex and perform bfs on those
            vertices if they are not visited before */
-        Queue *Q = CreateQueue(MAX_VERTICES);
+        Queue *Q = CreateQueue(VERTICES);
         Enqueue(Q,presentVertex);
         while(Q->size)
         {
@@ -201,7 +184,7 @@ void Bfs(int** graph, int *size, int presentVertex,int *visited)
                 int iter;
                 for(iter=0;iter<size[presentVertex];iter++)
                 {
-					//if(graph[presentVertex][iter]<MAX_VERTICES)
+					//if(graph[presentVertex][iter]<VERTICES)
 					//{
                         if(!visited[graph[presentVertex][iter]])
                         {
