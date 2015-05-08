@@ -68,7 +68,7 @@ Kernel2( bool* g_graph_mask, bool *g_updating_graph_mask, bool* g_graph_visited,
 		g_graph_mask[tid]=true;
 		g_graph_visited[tid]=true;
 		*g_over=true;
-		cuPrintf("visting branches in kernal2 %d,", tid);
+		//cuPrintf("visting branches in kernal2 %d,", tid);
 		g_updating_graph_mask[tid]=false;
 	}
 }
@@ -81,17 +81,17 @@ Kernel( Node* g_graph, int *g_edge, bool* g_graph_mask, bool* g_updating_graph_m
 	if( tid<VERTICES && g_graph_mask[tid])
 	{
 		g_graph_mask[tid]=false;
-		cuPrintf("now visiting%d, %d\n", tid, g_graph[tid].start);
+		//cuPrintf("now visiting%d, %d\n", tid, g_graph[tid].start);
 		for(int i=g_graph[tid].start; i<(g_graph[tid].no_of_edges+g_graph[tid].start); i++)
 			{
 			int id = g_edge[i];
 			if(!g_graph_visited[id])
 				{
-			cuPrintf("branches %d,", id);
+			//cuPrintf("branches %d,", id);
 				g_updating_graph_mask[id]=true;
 				}
 			}
-	cuPrintf("\n");
+	//cuPrintf("\n");
 	}
 }
 void Bfs(Node* graph_nodes, int *graph_edge, int presentVertex,bool *visited);
@@ -178,7 +178,7 @@ int main()
 		
 		
 		
-		printf("%d:\t", vertexCounter);
+	//	printf("%d:\t", vertexCounter);
 		graph_mask[vertexCounter] = false;
 		updating_graph_mask[vertexCounter] = false;
 		graph_visited[vertexCounter] = false;
@@ -187,10 +187,10 @@ int main()
 		{
 				int linkedVertex = rand()%VERTICES;
 				graph_edge[edgeCounter] = rand()%VERTICES;
-				printf("%d, ", graph_edge[edgeCounter]);
+				//printf("%d, ", graph_edge[edgeCounter]);
 		}
 
-		printf("\n");
+	//	printf("\n");
 
 	}
 
@@ -284,7 +284,7 @@ int main()
 	// Record event on the default stream
 	cudaEventRecord(start, 0);
 	
-	cudaPrintfInit ();
+//	cudaPrintfInit ();
 	do
 	{
 		
@@ -306,13 +306,12 @@ int main()
 	}
 	while(over);
 
-	cudaPrintfDisplay (stdout, true);
-	cudaPrintfEnd ();
+	//cudaPrintfDisplay (stdout, true);
+//	cudaPrintfEnd ();
 
-	CUDA_SAFE_CALL(cudaMemcpy( graph_visited, d_graph_visited, sizeof(bool)*VERTICES, cudaMemcpyDeviceToHost)) ;
+
 	
-		for(vertexCounter=0; vertexCounter<VERTICES; vertexCounter++)
-		printf("%d\t",graph_visited[vertexCounter]);
+	
 	
 	// Stop and destroy the timer
 	cudaEventRecord(stop,0);
