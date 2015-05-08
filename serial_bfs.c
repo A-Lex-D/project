@@ -11,7 +11,7 @@
 *	Modifications done to source code to get them to work together
 *
 *
-*	Compile with:  gcc -o mybfs mybfs.c -lrt
+*	Compile with:  gcc -o serial_bfs serial_bfs.c -lrt
 */
 
 #include <stdio.h>
